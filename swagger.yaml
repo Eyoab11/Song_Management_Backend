@@ -126,6 +126,10 @@ components:
         description:
           type: string
           example: A synth-driven pop anthem that topped charts worldwide and redefined The Weeknd’s sound.
+        image_url:
+          type: string
+          example: https://example.com/cover.jpg
+          description: URL to the song's image or cover art
         createdAt:
           type: string
           format: date-time
@@ -160,4 +164,8 @@ components:
           example: Toronto, Canada
         description:
           type: string
-          example: A synth-driven pop anthem that topped charts worldwide and redefined The Weeknd’s sound. 
+          example: A synth-driven pop anthem that topped charts worldwide and redefined The Weeknd’s sound.
+        image_url:
+          type: string
+          example: https://example.com/cover.jpg
+          description: URL to the song's image or cover art 

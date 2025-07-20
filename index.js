@@ -33,6 +33,7 @@ const songSchema = new mongoose.Schema({
   published: String,
   location: String,
   description: String,
+  image_url: String,
 }, { timestamps: true });
 
 const Song = mongoose.model('Song', songSchema);

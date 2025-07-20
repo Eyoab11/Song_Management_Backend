@@ -66,7 +66,8 @@ http://localhost:4000/api/songs
     "year": 2023,
     "published": "2023-01-01",
     "location": "City, Country",
-    "description": "A short description"
+    "description": "A short description",
+    "image_url": "https://example.com/cover.jpg"
   }
   ```
 - **Response:** `201 Created` `{ song }`
@@ -74,7 +75,7 @@ http://localhost:4000/api/songs
 
 #### **PUT /api/songs/{id}**
 - Update a song by ID
-- **Body:** (any fields to update)
+- **Body:** (any fields to update, including `image_url`)
 - **Response:** `200 OK` `{ song }`
 - **Error:** `404 Not Found`
 
