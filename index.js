@@ -28,20 +28,14 @@ const connectDB = async () => {
     }
 
     const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      ssl: true,
-      sslValidate: false,
-      retryWrites: true,
-      w: 'majority',
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
-      bufferCommands: false,
-      bufferMaxEntries: 0,
       maxPoolSize: 10,
       minPoolSize: 1,
       maxIdleTimeMS: 30000,
       connectTimeoutMS: 10000,
+      retryWrites: true,
+      w: 'majority',
     };
 
     await mongoose.connect(process.env.MONGO_URI, options);
