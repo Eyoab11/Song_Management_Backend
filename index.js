@@ -20,14 +20,58 @@ app.get('/health', (req, res) => {
 const swaggerDocument = YAML.load('./swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Connect to MongoDB Atlas
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// MongoDB Connection Function
+const connectDB = async () => {
+  try {
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI environment variable is not set');
+    }
+
+    const options = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      ssl: true,
+      sslValidate: false,
+      retryWrites: true,
+      w: 'majority',
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      bufferMaxEntries: 0,
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      maxIdleTimeMS: 30000,
+      connectTimeoutMS: 10000,
+    };
+
+    await mongoose.connect(process.env.MONGO_URI, options);
+    console.log('✅ Connected to MongoDB Atlas successfully!');
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:', error.message);
+    console.log('💡 Troubleshooting tips:');
+    console.log('   1. Check if MONGO_URI is correct');
+    console.log('   2. Ensure MongoDB Atlas network access allows all IPs (0.0.0.0/0)');
+    console.log('   3. Verify your MongoDB Atlas cluster is running');
+    console.log('   4. Check if your connection string includes the database name');
+    
+    // Don't exit the process, let it continue but API calls will fail
+    console.log('⚠️  Server will start but database operations will fail');
+  }
+};
+
+// Initialize database connection
+connectDB();
+
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', () => console.log('Connected to MongoDB Atlas!'));
+db.on('error', (err) => {
+  console.error('❌ MongoDB connection error:', err.message);
+});
+db.on('disconnected', () => {
+  console.log('⚠️  MongoDB disconnected');
+});
+db.on('reconnected', () => {
+  console.log('🔄 MongoDB reconnected');
+});
 
 // Song Schema & Model
 const songSchema = new mongoose.Schema({
@@ -46,6 +90,12 @@ const Song = mongoose.model('Song', songSchema);
 // Get all songs
 app.get('/api/songs', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ 
+        error: 'Database not connected', 
+        message: 'Please try again later' 
+      });
+    }
     const songs = await Song.find().sort({ createdAt: -1 });
     res.json(songs);
   } catch (err) {
@@ -56,6 +106,12 @@ app.get('/api/songs', async (req, res) => {
 // Get a single song by ID
 app.get('/api/songs/:id', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ 
+        error: 'Database not connected', 
+        message: 'Please try again later' 
+      });
+    }
     const song = await Song.findById(req.params.id);
     if (!song) return res.status(404).json({ error: 'Song not found' });
     res.json(song);
@@ -67,6 +123,12 @@ app.get('/api/songs/:id', async (req, res) => {
 // Create a new song
 app.post('/api/songs', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ 
+        error: 'Database not connected', 
+        message: 'Please try again later' 
+      });
+    }
     const song = new Song(req.body);
     await song.save();
     res.status(201).json(song);
@@ -78,6 +140,12 @@ app.post('/api/songs', async (req, res) => {
 // Update a song
 app.put('/api/songs/:id', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ 
+        error: 'Database not connected', 
+        message: 'Please try again later' 
+      });
+    }
     const song = await Song.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!song) return res.status(404).json({ error: 'Song not found' });
     res.json(song);
@@ -89,6 +157,12 @@ app.put('/api/songs/:id', async (req, res) => {
 // Delete a song
 app.delete('/api/songs/:id', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ 
+        error: 'Database not connected', 
+        message: 'Please try again later' 
+      });
+    }
     const song = await Song.findByIdAndDelete(req.params.id);
     if (!song) return res.status(404).json({ error: 'Song not found' });
     res.json(song);
