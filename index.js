@@ -11,6 +11,11 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'Song Management API is running!' });
+});
+
 // Swagger UI setup
 const swaggerDocument = YAML.load('./swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -93,6 +98,9 @@ app.delete('/api/songs/:id', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
+  console.log(`🚀 Song Management API Server is running!`);
+  console.log(`📍 Local: http://localhost:${PORT}`);
+  console.log(`📚 Swagger Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`💚 Health Check: http://localhost:${PORT}/health`);
+  console.log(`🎵 API Base: http://localhost:${PORT}/api/songs`);
 }); 
