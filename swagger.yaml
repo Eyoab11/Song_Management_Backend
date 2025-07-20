@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+  title: Song App Backend API
+  version: 1.0.0
+  description: REST API for managing songs in the Song Management App (Node.js, Express, MongoDB)
+servers:
+  - url: http://localhost:4000
+    description: Local server
+paths:
+  /api/songs:
+    get:
+      summary: Get all songs
+      responses:
+        '200':
+          description: List of songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+    post:
+      summary: Create a new song
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongInput'
+      responses:
+        '201':
+          description: Song created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '400':
+          description: Invalid input
+  /api/songs/{id}:
+    get:
+      summary: Get a song by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Song ID
+      responses:
+        '200':
+          description: Song found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '404':
+          description: Song not found
+    put:
+      summary: Update a song by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Song ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongInput'
+      responses:
+        '200':
+          description: Song updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '404':
+          description: Song not found
+    delete:
+      summary: Delete a song by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Song ID
+      responses:
+        '200':
+          description: Song deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '404':
+          description: Song not found
+components:
+  schemas:
+    Song:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60f7c2b8e1b1c2a5d8e4b123
+        title:
+          type: string
+          example: Blinding Lights
+        artist:
+          type: string
+          example: The Weeknd
+        album:
+          type: string
+          example: After Hours
+        year:
+          type: integer
+          example: 2020
+        published:
+          type: string
+          example: 2020-03-20
+        location:
+          type: string
+          example: Toronto, Canada
+        description:
+          type: string
+          example: A synth-driven pop anthem that topped charts worldwide and redefined The Weeknd’s sound.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SongInput:
+      type: object
+      required:
+        - title
+        - artist
+        - album
+        - year
+      properties:
+        title:
+          type: string
+          example: Blinding Lights
+        artist:
+          type: string
+          example: The Weeknd
+        album:
+          type: string
+          example: After Hours
+        year:
+          type: integer
+          example: 2020
+        published:
+          type: string
+          example: 2020-03-20
+        location:
+          type: string
+          example: Toronto, Canada
+        description:
+          type: string
+          example: A synth-driven pop anthem that topped charts worldwide and redefined The Weeknd’s sound. 
